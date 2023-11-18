@@ -57,7 +57,10 @@
 
 # Details Page Backdrop
     - Create a function that displays the background image inside of 'displayMovieDetails()'
-    - Takes two parameters
+    - Takes two parameters because we need to know if its 'movie' or 'tv' shows
+        - First will be 'movie' or 'tv'
+        - Second will be the backdrop path from the API endpoint 'movie.backdrop_path'
+    - Now create that function
 
 # TV Show Details Page
     -
