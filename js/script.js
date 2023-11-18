@@ -3,6 +3,11 @@ const global = {
     currentPage: window.location.pathname,
 };
 
+// Swiper Slider
+async function displaySlider(){
+  const { results } = await fetchAPIData('movie/now_playing');
+  console.log(results);
+}
 
 // Create function display popular movies
 async function displayPopularMovies(){
@@ -280,8 +285,10 @@ function init (){
         case '/':
         case '/index.html':
             console.log('Home');
+            displaySlider();
             displayPopularMovies();
             break;
+        case '/shows':
         case '/shows.html':
             console.log('Shows');
             displayPopularShows();

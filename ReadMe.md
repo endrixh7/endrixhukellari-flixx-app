@@ -75,12 +75,14 @@
 
 # TV Show Details Page
     - Create a function that fetch data from TV show endpoint
-    - 
+    - Cut/Paste all the HTML code from tv-details.html
+    - Inject the dynamic data
     - append to the DOM
     - call the function to 'init' function
 
 # Swiper Slider
-    -
+    - Swiper is a JS Library for carousel images
+    - Cut the Swiper code and we are going to implement through the JS
 
 # Search Functionality
     -
