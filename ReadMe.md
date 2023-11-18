@@ -60,10 +60,24 @@
     - Takes two parameters because we need to know if its 'movie' or 'tv' shows
         - First will be 'movie' or 'tv'
         - Second will be the backdrop path from the API endpoint 'movie.backdrop_path'
-    - Now create that function
+    - Now create that function on Details Page
+        - Again two parameters
+            - first will be 'type'
+            - second will be 'backgroundPath'
+        - Now create the element(div)
+        - Style the div by adding 'backgroundImage'
+            - Our div will be url with the image path from the TMDB API and the backgoundPath
+            - Adding these styles
+    - Last thing we need to see what the type need to be
+        - if is movie go to movie details + id
+        - if is shows go to show details + id
+        - dont forget to append the div
 
 # TV Show Details Page
-    -
+    - Create a function that fetch data from TV show endpoint
+    - 
+    - append to the DOM
+    - call the function to 'init' function
 
 # Swiper Slider
     -
