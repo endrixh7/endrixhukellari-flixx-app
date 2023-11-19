@@ -83,13 +83,91 @@
 # Swiper Slider
     - Swiper is a JS Library for carousel images
     - Cut the Swiper code and we are going to implement through the JS
+    - Fetch the Data
+    - Data is an array
+    - Loop through using forEach method
+        - create the div
+        - add the Swiper class
+        - Create the Html, paste the code that we took before
+        - Inject the dynamic data now
+    - Append it to the DOM
+    - init the Swiper here to ()
+    - Call the function inside of 'init' function
 
-# Search Functionality
-    -
+    - Now we are going to work with the Swiper configurations ()
+        - Create a function to initialize the Swiper object
+        - Add the configurations the we need
+        - We have to work with the breakpoints for the responsivenes
+            - Try to make the browser smaller
+    - We can create one for the TV Shows
 
-# Display Search Results
-    -
+# Search Functionality - Part 1 (under this title 'https://developer.themoviedb.org/reference/search-tv')
+    - url (https://developer.themoviedb.org/reference/search-tv)
+    - Before we start lets take a look on the HTML Form
+        - name
+        - type
+    - Create a function 'search()' 
+    - Now lets get data from the url
+        - First we need 'the query string' (everything from the ? mark)
+        - Second 'query param'
+        - How to get these data by separating each other
+            - Using URLSearchParams, this accept the query string inside (FormDataAPI)
+                - '.get()' method 
+    - Recommended to put in the Global Scope
+        - Create a 'search' object with some values:
+            - term
+            - type
+            - page (for pagination, set 1 by default)
+            - totalPages (set 1 by default)
+        - Go to 'Search' function
+            - Set the global object for 'type' and 'term' (from HTML Form) 
+    - Set an alert if the Search is left empty
+        - if and else
+            - alert prompt (We can create a custom alert)
+                - show alert function with two params
+                    - add CSS Class
+                - hide alert function
+            - add it to the DOM
+            - set a timeout and remove because will stay to the DOM
+    - Let make the request and display results
+        - set the API_KEY on the global state
+        - set the API_URL on the global state
+    - Make the request
+        - change the values on the response url
+            - add 'search/${global.search.type}' (radio button hold this information)
+            - add API_KEY
+            - add language
+            - query
+            - page will be added later for the pagination
+    - Call it to the 'init' function
+    - clg the response
+        - array
+        - total_pages
+        - total_results
+    - Now lets add data to the DOM
+
+# Display Search Results - Part 2
+    - Now that we created the structure for the API Request lets render the HTML
+        - First, destructure the Array {results, total_pages, page}
+        - Now we are going to use results
+        - Check if the array is 0 and display the alert, return
+        - If the array has data create a function 'displaySearchResults(results)'
+        - Clear input after search is submitted
+    - Now lets create the 'displaySearchResults' functionality
+        - Loop through and display data
+        - Easy way, copy the displayPopularMovies() and paste in the 'displaySearchResults' function
+            - Instead of the 'movie' param change it to 'result'
+            - At the 'img' pass the global variable - ${global.search.type}
+            - At 'alt' check for the 'type' (movie or tv) and set the result.name or result.title
+            - Same at movie.title
+            - At release date - result.release_date or result.first_air_date
+            - Append it to the DOM (#search-results)
+            - Gotcha at img - missing / and result.poster_path
 
 # Add Pagination
-    -
+    - Add a heading to display total results
+    
+    - Add pagination through the JS
+    
+
 

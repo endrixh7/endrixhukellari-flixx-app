@@ -6,7 +6,50 @@ const global = {
 // Swiper Slider
 async function displaySlider(){
   const { results } = await fetchAPIData('movie/now_playing');
-  console.log(results);
+  
+  results.forEach((movie)=>{
+    const div = document.createElement('div');
+    div.classList.add('swiper-slide');
+    div.innerHTML = `
+      <a href="movie-details.html?id=${movie.id}">
+        <img src="https://image.tmdb.org/t/p/w500/${movie.poster_path}" alt="${movie.title}" >
+      </a>
+      <h4 class="swiper-rating">
+        <i class="fas fa-star text-secondary"></i>
+        ${movie.vote_average} / 10
+      </h4>
+    `;
+    document.querySelector('.swiper-wrapper').appendChild(div);
+
+    // Init Swiper
+    initSwiper();
+  })
+}
+
+// Create initSwiper functionality
+function initSwiper() {
+  // Creating Swiper object
+  const swiper = new Swiper('.swiper', {
+    slidesPerView:1,
+    spaceBetween: 30,
+    freeMode: true,
+    loop: true,
+    autoplay: {
+      delay: 3000,
+      disableOnInteraction:false,
+    },
+    breakpoints: {
+      500: {
+        slidesPerView: 2,
+      },
+      700: {
+        slidesPerView: 3,
+      },
+      1200: {
+        slidesPerView: 4,
+      },
+    }
+  })
 }
 
 // Create function display popular movies
@@ -109,6 +152,11 @@ async function displayMovieDetails(){
 
   // Get the movieId now
   const movie = await fetchAPIData(`movie/${movieId}`);
+  // Backdrop function
+  // movie details
+  // tv details
+  displayBackgroundImage('movie', movie.backdrop_path);
+  // Dont forget, we cannot initialize before fetching the data
 
   // Create an element
   const div = document.createElement('div');
@@ -170,6 +218,30 @@ async function displayMovieDetails(){
   `;
   // Put it in the DOM
   document.querySelector('#movie-details').appendChild(div);
+}
+
+// Backdrop function, creating functionality
+function displayBackgroundImage(type, backgroundPath) {
+  const overlayDiv = document.createElement('div');
+  // Set the img on the div by using 'url'
+  overlayDiv.style.backgroundImage = `url(https://image.tmdb.org/t/p/original/${backgroundPath})`
+  overlayDiv.style.backgroundSize = 'cover';
+  overlayDiv.style.backgroundPosition = 'center';
+  overlayDiv.style.backgroundRepeat = 'no-repeat';
+  overlayDiv.style.height = '100vh';
+  overlayDiv.style.width = '100vw';
+  overlayDiv.style.position = 'absolute';
+  overlayDiv.style.top = '0';
+  overlayDiv.style.left = '0';
+  overlayDiv.style.zIndex = '-1';
+  overlayDiv.style.opacity = '0.1';
+
+  // Check to see what the type is, movie or tv
+  if (type === 'movie') {
+    document.querySelector('#movie-details').appendChild(overlayDiv);
+  } else {
+    document.querySelector('#show-details').appendChild(overlayDiv);
+  }
 }
 
 async function displayShowDetails(){
