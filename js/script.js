@@ -1,6 +1,17 @@
 // Global Settings
 const global = {
     currentPage: window.location.pathname,
+    search: {
+      term: '',
+      type: '',
+      page:1,
+      total_pages:1,
+      total_results:0
+    },
+    api: {
+      apiKey: '922cdb31355d71ba2e65e4ff6ff074a8',
+      apiUrl: 'https://api.themoviedb.org/3/'
+    },
 };
 
 // Swiper Slider
@@ -52,6 +63,159 @@ function initSwiper() {
   })
 }
 
+// Search Movies/Shows
+// get the data from URL
+async function search() {
+  const queryString = window.location.search;
+
+  const urlParams = new URLSearchParams(queryString);
+  global.search.type = urlParams.get('type');
+  global.search.term = urlParams.get('search-term');
+
+  if(global.search.term !== '' && global.search.term !== null) {
+    const { results, total_pages, page, total_results }  = await searchAPIData();
+    console.log(results);
+
+    //Working for Pagination
+    global.search.page = page;
+    global.search.total_pages = total_pages;
+    global.search.total_results = total_results;
+
+    if (results.length === 0) {
+      showAlert('No result found');
+      return;
+    }
+
+    // Add data to DOM if we have results
+    displaySearchResults(results);
+
+    // Clear the input
+    document.querySelector('#search-term').value = '';
+
+  } else {
+    showAlert('Please enter a search term');
+  }
+}
+// Lets create the displaySearchResults functionality
+
+function displaySearchResults(results) {
+  // Clear the screen from the previous results
+  document.querySelector('#search-results').innerHTML = '';
+  // Clear the heading
+  document.querySelector('#search-results-heading').innerHTML = '';
+  // Clear the pagination
+  document.querySelector('#pagination').innerHTML = '';
+
+  // Loop through and show cards
+  results.forEach((result)=>{
+    const div = document.createElement('div');
+    div.classList.add('card');
+    div.innerHTML = `
+    <a href="${global.search.type}-details.html?id=${result.id}">
+      ${
+        result.poster_path ? `<img
+        src="https://image.tmdb.org/t/p/w500/${result.poster_path}"
+        class="card-img-top"
+        alt="${global.search.type === 'movie' ? result.title : result.name}"
+      />` : `
+      <img
+      src="images/no-image.jpg"
+      class="card-img-top"
+      alt="${global.search.type === 'movie' ? result.title : result.name}"
+    />
+      `
+      }
+    </a>
+    <div class="card-body">
+      <h5 class="card-title">${global.search.type === 'movie' ? result.title : result.name}</h5>
+      <p class="card-text">
+        <small class="text-muted">Release: ${global.search.type === 'movie' ? result.release_date : result.first_air_date}</small>
+      </p>
+    </div>
+    `;
+
+    // Display Heading
+    document.querySelector('#search-results-heading').innerHTML = `<h2> ${results.length} of ${global.search.total_results} Results for ${global.search.term} </h2>`;
+
+    document.querySelector('#search-results').appendChild(div);
+});
+  // Display pagination
+  displayPagination();
+}
+// Display pagination for search
+function displayPagination() {
+  // Create a div
+  const div = document.createElement('div');
+  // Add class 'pagination'
+  div.classList.add('pagination');
+  div.innerHTML = `
+  <button class="btn btn-primary" id="prev">Prev</button>
+  <button class="btn btn-primary" id="next">Next</button>
+  <div class="page-counter">Page ${global.search.page} of ${global.search.total_pages}</div>
+  `;
+
+  document.querySelector('#pagination').appendChild(div);
+
+  // Disable prev button if on first page
+  if(global.search.page === 1) {
+    document.querySelector('#prev').disabled = true;
+  }
+  // Disable next button if on last page
+  if(global.search.page === global.search.total_pages) {
+    document.querySelector('#next').disabled = true;
+  }
+
+  // Next page , addEvent listener, to make again a fetch api for the next data, because we gonna se the same data always
+    document.querySelector('#next').addEventListener('click', async ()=>{
+    // Increment the global page
+    global.search.page++;
+    const { results, total_pages } = await searchAPIData();
+    displaySearchResults(results);
+    // After this command we will have a bug, previous data will be here and the button will be duplicated, lets hande that by clearing the screen, go to results and clear the data before show the results
+  })
+  // Prev page , addEvent listener, to make again a fetch api for the next data, because we gonna se the same data always
+    document.querySelector('#prev').addEventListener('click', async ()=>{
+    // Increment the global page
+    global.search.page--;
+    const { results, total_pages } = await searchAPIData();
+    displaySearchResults(results);
+    // After this command we will have a bug, previous data will be here and the button will be duplicated, lets hande that by clearing the screen, go to results and clear the data before show the results
+  })
+}
+
+async function searchAPIData() {
+  const API_KEY = global.api.apiKey;
+  const API_URL = global.api.apiUrl;
+  showSpinner();
+
+  // Change things here
+  // Passing the global html properties to the url
+  // name and search-term
+  // page - for pagination
+  // Add page here 
+  const response = await fetch(
+      `${API_URL}search/${global.search.type}?api_key=${API_KEY}&language=en-us&query=${global.search.term}&page=${global.search.page}`
+      );
+
+  // Data in JSON format
+  const data = await response.json();
+  hideSpinner();
+  return data;
+}
+
+// Show alert 
+function showAlert(message, className = 'error') {
+  const alertEl = document.createElement('div');
+  alertEl.classList.add('alert', className);
+  alertEl.appendChild(document.createTextNode(message));
+  document.querySelector('#alert').appendChild(alertEl);
+
+  // remove the alert after 3 seconds
+  setTimeout(()=>{
+    alertEl.remove()
+  }, 3000);
+};
+
 // Create function display popular movies
 async function displayPopularMovies(){
     // Destructuring the data, results in this case
@@ -89,7 +253,7 @@ async function displayPopularMovies(){
         </div>
         `;
         document.querySelector('#popular-movies').appendChild(div);
-    })
+    });
     // Dont forget to call within the 'init function' for every loading
 }
 
@@ -322,8 +486,8 @@ function hideSpinner (){
 // Fetch Data from TMDB API
 // Take your key from .env file
 async function fetchAPIData(endpoint) {
-    const API_KEY = '922cdb31355d71ba2e65e4ff6ff074a8';
-    const API_URL = 'https://api.themoviedb.org/3/';
+    const API_KEY = global.api.apiKey;
+    const API_URL = global.api.apiUrl;
     showSpinner();
     const response = await fetch(
         `${API_URL}${endpoint}?api_key=${API_KEY}&language=en-us`
@@ -375,6 +539,7 @@ function init (){
             break;
         case '/search.html':
             console.log('Search');
+            search();
             break;
     }
     highlightActiveLink();
